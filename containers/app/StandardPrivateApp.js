@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { EventManagerProvider, ModalsChildren, ThemeInjector } from '../../index';
+import { EventManagerProvider, ModalsChildren, ThemeInjector, DensityInjector } from '../../index';
 import { UserModel, UserSettingsModel } from 'proton-shared/lib/models';
 import { unique } from 'proton-shared/lib/helpers/array';
 import loadLocale from 'proton-shared/lib/i18n/loadLocale';
@@ -82,6 +82,7 @@ const StandardPrivateApp = ({
             <EventModelListener models={eventModels} />
             <EventNotices />
             <ThemeInjector />
+            <DensityInjector />
             <ModalsChildren />
             <ForceRefreshProvider>{children}</ForceRefreshProvider>
         </EventManagerProvider>
