@@ -7,7 +7,9 @@ import {
     Field,
     Label,
     Info,
+    Loader,
     useNotifications,
+    useUserSettings,
     useMailSettings,
     useEventManager,
     useLoading,
@@ -21,6 +23,7 @@ import {
     updateDraftType,
     updateRightToLeft
 } from 'proton-shared/lib/api/mailSettings';
+import { updateDensity } from 'proton-shared/lib/api/settings';
 import { VIEW_MODE, STICKY_LABELS } from 'proton-shared/lib/constants';
 
 import DraftTypeSelect from './DraftTypeSelect';
@@ -28,18 +31,24 @@ import TextDirectionSelect from './TextDirectionSelect';
 import ComposerModeRadios from './ComposerModeRadios';
 import ViewLayoutRadios from './ViewLayoutRadios';
 import ViewModeRadios from './ViewModeRadios';
+import DensityRadios from './DensityRadios';
 import StickyLabelsToggle from './StickyLabelsToggle';
 
 const { GROUP } = VIEW_MODE;
 
 const LayoutsSection = () => {
-    const [{ ComposerMode, ViewMode, ViewLayout, StickyLabels, DraftMIMEType, RightToLeft } = {}] = useMailSettings();
+    const [
+        { ComposerMode, ViewMode, ViewLayout, StickyLabels, DraftMIMEType, RightToLeft },
+        loadingMailSettings
+    ] = useMailSettings();
+    const [{ Density }, loadingUserSettings] = useUserSettings();
     const { call } = useEventManager();
     const { createNotification } = useNotifications();
     const api = useApi();
     const [loadingComposerMode, withLoadingComposerMode] = useLoading();
     const [loadingViewMode, withLoadingViewMode] = useLoading();
     const [loadingViewLayout, withLoadingViewLayout] = useLoading();
+    const [loadingDensity, withLoadingDensity] = useLoading();
     const [loadingStickyLabels, withLoadingStickyLabels] = useLoading();
     const [loadingDraftType, withLoadingDraftType] = useLoading();
     const [loadingRightToLeft, withLoadingRightToLeft] = useLoading();
@@ -69,6 +78,12 @@ const LayoutsSection = () => {
         notifyPreferenceSaved();
     };
 
+    const handleChangeDensity = async (density) => {
+        await api(updateDensity(density));
+        await call();
+        notifyPreferenceSaved();
+    };
+
     const handleToggleStickyLabels = async (value) => {
         await api(updateStickyLabels(value));
         await call();
@@ -86,6 +101,10 @@ const LayoutsSection = () => {
         await call();
         notifyPreferenceSaved();
     };
+
+    if (loadingMailSettings || loadingUserSettings) {
+        return <Loader />;
+    }
 
     return (
         <>
@@ -137,6 +156,15 @@ const LayoutsSection = () => {
                     onChange={(value) => withLoadingViewMode(handleChangeViewMode(value))}
                     loading={loadingViewMode}
                     id="viewMode"
+                />
+            </Row>
+            <Row>
+                <Label htmlFor="density">{c('Label').t`Density`}</Label>
+                <DensityRadios
+                    density={Density}
+                    onChange={(value) => withLoadingDensity(handleChangeDensity(value))}
+                    loading={loadingDensity}
+                    id="density"
                 />
             </Row>
             {ViewMode === GROUP ? (
