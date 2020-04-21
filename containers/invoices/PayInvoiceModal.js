@@ -38,7 +38,7 @@ const PayInvoiceModal = ({ invoice, fetchInvoices, ...rest }) => {
         rest.onClose();
     };
 
-    const { card, setCard, errors, method, setMethod, parameters, canPay, paypal, paypalCredit } = usePayment({
+    const { card, setCard, errors, method, setMethod, parameters, canPay } = usePayment({
         amount: AmountDue,
         currency: Currency,
         onPay: handleSubmit
@@ -94,8 +94,6 @@ const PayInvoiceModal = ({ invoice, fetchInvoices, ...rest }) => {
                             onMethod={setMethod}
                             onCard={setCard}
                             errors={errors}
-                            paypal={paypal}
-                            paypalCredit={paypalCredit}
                         />
                     ) : null}
                 </>
